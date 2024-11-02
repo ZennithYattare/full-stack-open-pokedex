@@ -11,6 +11,11 @@ app.get('/health', (req, res) => {
   res.send('ok')
 })
 
+// NOTE: this is a simple hello world endpoint
+app.get('/hello', (req, res) => {
+  res.send('Hello World!')
+})
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`server started on port ${PORT}`)
