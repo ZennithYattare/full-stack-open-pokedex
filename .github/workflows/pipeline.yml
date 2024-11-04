@@ -1,5 +1,8 @@
 name: Deployment pipeline
 
+env:
+  REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
+
 on:
  push:
   branches:
@@ -32,8 +35,7 @@ jobs:
       wait-on: http://localhost:5000
    - name: Get commits
      run: |
-      # Testing if workflow fails without skip keyword 
-      COMMITS_URL=$(echo "${{ github.event.repository.commits_url }}" | sed 's/{\/sha}//') 
+      COMMITS_URL=${{ env.REPOSITORY_URL }}
       if [ "${COMMITS_URL}x" != "x" ]; then
         LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
         echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
@@ -58,7 +60,7 @@ jobs:
    - uses: actions/checkout@v4
    - name: Get commits
      run: |
-      COMMITS_URL=$(echo "${{ github.event.repository.commits_url }}" | sed 's/{\/sha}//')
+      COMMITS_URL=${{ env.REPOSITORY_URL }}
       if [ "${COMMITS_URL}x" != "x" ]; then
         LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
         echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
