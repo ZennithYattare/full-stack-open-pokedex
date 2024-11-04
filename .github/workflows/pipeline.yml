@@ -34,11 +34,15 @@ jobs:
       start: npm run start-prod
       wait-on: http://localhost:5000
    - name: Get commits
-     run: |
+          run: |
       COMMITS_URL=${{ env.REPOSITORY_URL }}
       if [ "${COMMITS_URL}x" != "x" ]; then
         LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
-        echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
+        {
+          echo 'LAST_MSG<<EOF'
+          echo "${LAST_MSG}"
+          echo 'EOF'
+        } >> "${GITHUB_ENV}"
       else
         echo 'LAST_MSG=' >> "${GITHUB_ENV}"
       fi
@@ -46,9 +50,9 @@ jobs:
      id: check_skip
      run: |
       if echo "${LAST_MSG}" | grep -q "#skip"; then
-        echo "SKIP_DEPLOY=true" >> "${GITHUB_ENV}"
+        echo "SKIP_DEPLOY=true" >> $GITHUB_ENV
       else
-        echo "SKIP_DEPLOY=false" >> "${GITHUB_ENV}"
+        echo "SKIP_DEPLOY=false" >> $GITHUB_ENV
       fi
    - name: Trigger deployment
      if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY == 'false' }}
@@ -63,7 +67,11 @@ jobs:
       COMMITS_URL=${{ env.REPOSITORY_URL }}
       if [ "${COMMITS_URL}x" != "x" ]; then
         LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
-        echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
+        {
+          echo 'LAST_MSG<<EOF'
+          echo "${LAST_MSG}"
+          echo 'EOF'
+        } >> "${GITHUB_ENV}"
       else
         echo 'LAST_MSG=' >> "${GITHUB_ENV}"
       fi
@@ -71,9 +79,9 @@ jobs:
      id: check_skip
      run: |
       if echo "${LAST_MSG}" | grep -q "#skip"; then
-        echo "SKIP_DEPLOY=true" >> "${GITHUB_ENV}"
+        echo "SKIP_DEPLOY=true" >> $GITHUB_ENV
       else
-        echo "SKIP_DEPLOY=false" >> "${GITHUB_ENV}"
+        echo "SKIP_DEPLOY=false" >> $GITHUB_ENV
       fi
    - name: Bump version and push tag
      if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY == 'false' }}
