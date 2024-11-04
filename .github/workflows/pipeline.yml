@@ -30,22 +30,52 @@ jobs:
       command: npm run test:e2e
       start: npm run start-prod
       wait-on: http://localhost:5000
-   - name: Get commit messages
-     id: get_commit_messages
-     run: echo "::set-output name=messages::$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '.[]')"
+   - name: Get commits
+     env:
+      COMMITS_URL: ${{ github.event.pull_request.commits_url }}
+     run: |
+      if [ "${COMMITS_URL}x" != "x" ]; then
+        LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
+        echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
+      else
+        echo 'LAST_MSG=' >> "${GITHUB_ENV}"
+      fi
+   - name: Check for #skip keyword
+     id: check_skip
+     run: |
+      if echo "${LAST_MSG}" | grep -q "#skip"; then
+        echo "SKIP_DEPLOY=true" >> "${GITHUB_ENV}"
+      else
+        echo "SKIP_DEPLOY=false" >> "${GITHUB_ENV}"
+      fi
    - name: Trigger deployment
-     if: ${{ github.event_name == 'push' && !contains(steps.get_commit_messages.outputs.messages, '#skip') }}
+     if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY == 'false' }}
      run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
  tag_release:
   needs: [simple_deployment_pipeline]
   runs-on: ubuntu-20.04
   steps:
    - uses: actions/checkout@v4
-   - name: Get commit messages
-     id: get_commit_messages
-     run: echo "::set-output name=messages::$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '.[]')"
+   - name: Get commits
+     env:
+      COMMITS_URL: ${{ github.event.pull_request.commits_url }}
+     run: |
+      if [ "${COMMITS_URL}x" != "x" ]; then
+        LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
+        echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
+      else
+        echo 'LAST_MSG=' >> "${GITHUB_ENV}"
+      fi
+   - name: Check for #skip keyword
+     id: check_skip
+     run: |
+      if echo "${LAST_MSG}" | grep -q "#skip"; then
+        echo "SKIP_DEPLOY=true" >> "${GITHUB_ENV}"
+      else
+        echo "SKIP_DEPLOY=false" >> "${GITHUB_ENV}"
+      fi
    - name: Bump version and push tag
-     if: ${{ github.event_name == 'push' && !contains(steps.get_commit_messages.outputs.messages, '#skip') }}
+     if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY == 'false' }}
      uses: anothrNick/github-tag-action@1.71.0
      env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
