@@ -34,7 +34,7 @@ jobs:
       start: npm run start-prod
       wait-on: http://localhost:5000
    - name: Get commits
-          run: |
+     run: |
       COMMITS_URL=${{ env.REPOSITORY_URL }}
       if [ "${COMMITS_URL}x" != "x" ]; then
         LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=1" | jq -r '.[0].commit.message')
