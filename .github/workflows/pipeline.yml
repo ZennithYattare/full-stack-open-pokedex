@@ -1,7 +1,7 @@
 name: Deployment pipeline
 
 env:
-  REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
+  REPOSITORY_URL: https://api.github.com/repos/${{ github.repository }}/commits
 
 on:
  push:
@@ -86,7 +86,7 @@ jobs:
       fi
    - name: Bump version and push tag
      if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY == 'false' }}
-     uses: anothrNick/github-tag-action@1.71.0
+     uses: anothrNick/github-tag-action@f278d49d30cdd8775cc3e7dd00b5ee11686ee297
      env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DEFAULT_BUMP: patch
