@@ -37,7 +37,7 @@ jobs:
       if [ "${{ github.event_name }}" == "pull_request" ]; then
         COMMITS_URL="${{ github.event.pull_request.commits_url }}"
       else
-        COMMITS_URL="${{ github.event.repository.commits_url }}/commits/${{ github.sha }}"
+        COMMITS_URL="${{ github.event.repository.commits_url }}"
       fi
 
       if [ "${COMMITS_URL}x" != "x" ]; then
@@ -69,7 +69,7 @@ jobs:
       if [ "${{ github.event_name }}" == "pull_request" ]; then
         COMMITS_URL="${{ github.event.pull_request.commits_url }}"
       else
-        COMMITS_URL="${{ github.event.repository.commits_url }}/commits/${{ github.sha }}"
+        COMMITS_URL="${{ github.event.repository.commits_url }}"
       fi
 
       if [ "${COMMITS_URL}x" != "x" ]; then
