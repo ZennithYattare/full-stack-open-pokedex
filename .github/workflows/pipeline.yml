@@ -4,9 +4,9 @@ on:
  push:
   branches:
    - main
-  pull_request:    
-    branches: [main]    
-    types: [opened, synchronize]
+  pull_request:
+   branches: [main]
+   types: [opened, synchronize]
 
 jobs:
  simple_deployment_pipeline:
@@ -30,6 +30,24 @@ jobs:
       command: npm run test:e2e
       start: npm run start-prod
       wait-on: http://localhost:5000
+   - name: Get commit messages
+     id: get_commit_messages
+     run: echo "::set-output name=messages::$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '.[]')"
    - name: Trigger deployment
-     if: ${{ github.event_name == 'push' }}
+     if: ${{ github.event_name == 'push' && !contains(steps.get_commit_messages.outputs.messages, '#skip') }}
      run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+ tag_release:
+  needs: [simple_deployment_pipeline]
+  runs-on: ubuntu-20.04
+  steps:
+   - uses: actions/checkout@v4
+   - name: Get commit messages
+     id: get_commit_messages
+     run: echo "::set-output name=messages::$(echo '${{ toJson(github.event.commits.*.message) }}' | jq -r '.[]')"
+   - name: Bump version and push tag
+     if: ${{ github.event_name == 'push' && !contains(steps.get_commit_messages.outputs.messages, '#skip') }}
+     uses: anothrNick/github-tag-action@1.71.0
+     env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DEFAULT_BUMP: patch
+      RELEASE_BRANCHES: master
