@@ -49,6 +49,7 @@ jobs:
    - name: Check for #skip keyword
      id: check_skip
      run: |
+      # Check if skip exists
       if echo "${LAST_MSG}" | grep -q "#skip"; then
         echo "SKIP_DEPLOY=true" >> $GITHUB_ENV
       else
