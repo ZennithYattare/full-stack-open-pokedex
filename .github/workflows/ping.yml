@@ -1,3 +1,5 @@
+name: Periodic health check 
+
 # NOTE: Disabled to prevent consumption of GitHub Action hours, using Git push as the workflow trigger
 # on:
 #   schedule:
