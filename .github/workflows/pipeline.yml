@@ -26,13 +26,11 @@ jobs:
    - name: build
      run: npm run build
    - name: Build failed
-     uses: BubbleProd/discord-webhook-notify@v2.0.1
+     uses: johnnyhuy/actions-discord-git-webhook@main 
      if: ${{ failure() }}
      with:
-      text: Build failed
-      severity: error
-      details: commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build 😭📉
-      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}     
+      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+      color: f85149
    - name: test
      run: npm run test
    - name: e2e tests
@@ -100,11 +98,8 @@ jobs:
       DEFAULT_BUMP: patch
       RELEASE_BRANCHES: master
    - name: new version of Pokedex deployed
-     uses: BubbleProd/discord-webhook-notify@v2.0.1
+     uses: johnnyhuy/actions-discord-git-webhook@main 
      if: ${{ success() }}
      with:
-      text: A new version of Pokedex was deployed
-      severity: info
-      details: to ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}
-      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-   
+      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+      color: 3fb950 
