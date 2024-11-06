@@ -1,14 +1,14 @@
 name: Periodic health check ping
 
 # NOTE: Disabled to prevent consumption of GitHub Action hours, using Git push as the workflow trigger
-on:
-  schedule:
-    - cron: '*/1 * * * *'
-
 # on:
-#  push:
-#   branches:
-#    - main
+#   schedule:
+#     - cron: '*/1 * * * *'
+
+on:
+ push:
+  branches:
+   - main
 
 jobs:
   health_check:
