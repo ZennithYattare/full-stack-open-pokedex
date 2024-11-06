@@ -24,9 +24,7 @@ jobs:
    - name: lint
      run: npm run eslint
    - name: build
-     run: |
-      npm run build
-      exit 1  # Force the build to fail
+     run: npm run build
    - name: Build failed
      if: ${{ failure() }}   
      env:
