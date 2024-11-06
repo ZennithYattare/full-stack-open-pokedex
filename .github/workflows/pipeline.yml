@@ -106,5 +106,5 @@ jobs:
       text: A new version of Pokedex was deployed
       severity: info
       details: to ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}
-      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
    
