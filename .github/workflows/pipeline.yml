@@ -25,6 +25,14 @@ jobs:
      run: npm run eslint
    - name: build
      run: npm run build
+   - name: Build failed
+     uses: rjstone/discord-webhook-notify@v1.0.4
+     if: ${{ failure() }}
+     with:
+      text: Build failed
+      severity: error
+      details: commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build 😭📉
+      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}     
    - name: test
      run: npm run test
    - name: e2e tests
@@ -91,3 +99,12 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DEFAULT_BUMP: patch
       RELEASE_BRANCHES: master
+   - name: new version of Pokedex deployed
+     uses: rjstone/discord-webhook-notify@v1.0.4
+     if: ${{ success() }}
+     with:
+      text: A new version of Pokedex was deployed
+      severity: info
+      details: to ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}
+      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+   
