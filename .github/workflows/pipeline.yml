@@ -26,8 +26,8 @@ jobs:
    - name: build
      run: npm run build
    - name: Build failed
-     uses: rjstone/discord-webhook-notify@v1.0.4
-     if: failure()
+     uses: BubbleProd/discord-webhook-notify@v2.0.1
+     if: ${{ failure() }}
      with:
       text: Build failed
       severity: error
@@ -100,11 +100,11 @@ jobs:
       DEFAULT_BUMP: patch
       RELEASE_BRANCHES: master
    - name: new version of Pokedex deployed
-     uses: rjstone/discord-webhook-notify@v1.0.4
-     if: success()
+     uses: BubbleProd/discord-webhook-notify@v2.0.1
+     if: ${{ success() }}
      with:
       text: A new version of Pokedex was deployed
       severity: info
       details: to ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}
-      webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
    
