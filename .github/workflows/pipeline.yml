@@ -26,11 +26,12 @@ jobs:
    - name: build
      run: npm run build
    - name: Build failed
-     uses: johnnyhuy/actions-discord-git-webhook@main 
-     if: ${{ failure() }}
+     if: ${{ failure() }}   
+     env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+     uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
      with:
-      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-      color: f85149
+      args: 'commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build 😭📉'
    - name: test
      run: npm run test
    - name: e2e tests
@@ -98,8 +99,9 @@ jobs:
       DEFAULT_BUMP: patch
       RELEASE_BRANCHES: master
    - name: new version of Pokedex deployed
-     uses: johnnyhuy/actions-discord-git-webhook@main 
      if: ${{ success() }}
+     env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+     uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
      with:
-      webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
-      color: 3fb950 
+      args: 'Project deployed at ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}'
