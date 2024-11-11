@@ -3,6 +3,7 @@ name: Deployment pipeline
 env:
   REPOSITORY_URL: https://api.github.com/repos/${{ github.repository }}/commits
 
+# NOTE: test for PR
 on:
  push:
   branches:
