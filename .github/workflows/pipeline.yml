@@ -25,6 +25,13 @@ jobs:
      run: npm run eslint
    - name: build
      run: npm run build
+   - name: Build failed
+     if: ${{ failure() }}   
+     env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+     uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+     with:
+      args: '❌ Commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build'
    - name: test
      run: npm run test
    - name: e2e tests
@@ -91,3 +98,10 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DEFAULT_BUMP: patch
       RELEASE_BRANCHES: master
+   - name: new version of Pokedex deployed
+     if: ${{ success() && env.SKIP_DEPLOY == 'false' }}
+     env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+     uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+     with:
+      args: '✅ Project deployed at ${{ secrets.WEB_SERVICE_URL }} by ${{ github.actor }}'
