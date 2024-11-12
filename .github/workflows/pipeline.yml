@@ -3,11 +3,12 @@ name: Deployment pipeline
 env:
   REPOSITORY_URL: https://api.github.com/repos/${{ github.repository }}/commits
 
+# NOTE: test for PR
 on:
  push:
   branches:
    - main
-  pull_request:
+ pull_request:
    branches: [main]
    types: [opened, synchronize]
 
@@ -20,7 +21,7 @@ jobs:
      with:
       node-version: "20"
    - name: Install dependencies
-     run: npm install
+     run: npm install 
    - name: lint
      run: npm run eslint
    - name: build
@@ -30,7 +31,7 @@ jobs:
      env:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
      uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
-     with:
+     with:  
       args: '❌ Commit https://github.com/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.actor }} broke the build'
    - name: test
      run: npm run test
